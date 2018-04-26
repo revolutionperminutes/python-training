@@ -1,24 +1,29 @@
-import libvirt
 import sys
-conn=libvirt.open("qemu:///system")
-argvs = sys.argv
+import libvirt
+from nova import utils
+
+conn = libvirt.open("qemu:///system")
 
 def check_instance_status(instance_name):
-    for dom in conn.listAllDomains() :
-        status=dom.info()
+    dom = conn.lookupByName(instance_name)
+    state, reason = dom.state()
 
-        if (instance_name == dom.name()) and (status[0] == 5):
-            return True
+    if state == libvirt.VIR_DOMAIN_SHUTOFF:
+        return True
+    else:
+        print('The state is not SHUTOFF.')
     return False
 
 def vm_convert(instance_name):
-    return True
+    from_path = "/var/lib/nova/instances/" + instance_name + "/disk"
+    tmp_path = "/var/lib/nova/tmp/" + instance_name + "_disk"
+    print(from_path)
+    print(tmp_path)
+    utils.execute('qemu-img', 'convert', '-f', 'qcow2','-O', 'raw', from_path, tmp_path)
 
 if __name__ == '__main__':
 
     instance_name = sys.argv[1]
     ret = check_instance_status(instance_name)
     if ret is True:
-        print("convert available")
-    else:
-        print("Please input available vm or no vm in here")
+        vm_convert(instance_name)
