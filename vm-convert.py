@@ -14,12 +14,11 @@ def check_instance_status(instance_name):
 def vm_convert(instance_name):
     return True
 
-def main():
+if __name__ == '__main__':
+
     instance_name = sys.argv[1]
     ret = check_instance_status(instance_name)
     if ret is True:
         print("convert available")
     else:
         print("Please input available vm or no vm in here")
-
-main()
