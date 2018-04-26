@@ -9,8 +9,7 @@ def check_instance_status(instance_name):
 
         if (instance_name == dom.name()) and (status[0] == 5):
             return True
-        else:
-            continue
+    return False
 
 def vm_convert(instance_name):
     return True
